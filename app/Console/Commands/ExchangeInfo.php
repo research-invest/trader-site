@@ -1,5 +1,7 @@
 <?php
-
+/**
+ * php artisan exchange-info:run
+ */
 namespace App\Console\Commands;
 
 use App\Models\Account\Account;
