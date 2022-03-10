@@ -1,5 +1,7 @@
 <?php
-
+/**
+ * php artisan coins-set-rank:run
+ */
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
@@ -44,14 +46,17 @@ class CoinsSetRank extends Command
         try {
             $sqlReCalculate = <<<SQL
 WITH coin_asset_volume AS (
-    SELECT
-        DISTINCT ON (k.coin_pair_id) k.coin_pair_id,
-            cp.coin_id,
-            k.quote_asset_volume,
-            row_number() OVER (ORDER BY k.quote_asset_volume DESC) AS rank
-    FROM klines AS k
-    INNER JOIN coins_pairs AS cp ON cp.id = k.coin_pair_id
-    ORDER BY k.coin_pair_id, k.quote_asset_volume DESC
+    SELECT t.*,
+    row_number() OVER (ORDER BY t.quote_asset_volume DESC) AS rank
+    FROM (
+        SELECT
+            DISTINCT ON (k.coin_pair_id) k.coin_pair_id,
+                cp.coin_id,
+                k.quote_asset_volume
+        FROM klines AS k
+        INNER JOIN coins_pairs AS cp ON cp.id = k.coin_pair_id
+        ORDER BY k.coin_pair_id, k.quote_asset_volume DESC
+    ) AS t
 )
 
 UPDATE coins SET rank = volume.rank
