@@ -12,6 +12,7 @@ use Illuminate\Console\Command;
 /**
  * Class ExchangeInfo
  * @doc https://binance-docs.github.io/apidocs/spot/en/#cancel-all-open-orders-on-a-symbol-trade
+ * @doc https://binance-docs.github.io/apidocs/spot/en/#public-api-definitions
  * @doc https://github.com/binance/binance-spot-api-docs/blob/master/rest-api.md
  * @package App\Console\Commands
  */

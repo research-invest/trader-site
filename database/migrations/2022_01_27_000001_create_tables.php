@@ -37,7 +37,7 @@ class CreateTables extends Migration
             $table->string('name', 100);
             $table->string('code', 30)->unique('coins_code');
             $table->string('icon', 100)->nullable();
-            $table->string('interval', 10)->nullable(false)->default('1d');
+            $table->string('interval', 10)->nullable(false)->default('1h');
             $table->unsignedSmallInteger('is_enabled')->default(1);
             $table->timestamps();
         });
