@@ -92,8 +92,10 @@ class CreateTables extends Migration
             $table->double('stop_price', 16, 2);
             $table->double('iceberg_qty', 16, 2);
             $table->double('orig_quote_order_qty', 16, 2);
-            $table->timestamp('time');
-            $table->timestamp('update_time');
+            $table->bigInteger('time');
+            $table->bigInteger('update_time');
+
+            $table->timestamps();
 
             $table->unsignedBigInteger('account_id')->nullable(false)->default(1);
 
