@@ -22,7 +22,7 @@ BEGIN
     if old > new then
         result = CASE WHEN new > 0 THEN (decreaseValue / new) * 100 ELSE -100 END;
     else
-        result = CASE WHEN old > 0 then (decreaseValue / old) * 100 ELSE 100 END;
+        result = CASE WHEN old > 0 then (decreaseValue / old) * 100 ELSE 0 END;
     end if;
 
     RETURN ROUND(CAST(result AS NUMERIC), 3);
