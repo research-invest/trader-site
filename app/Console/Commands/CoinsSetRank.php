@@ -55,6 +55,7 @@ WITH coin_asset_volume AS (
                 k.quote_asset_volume
         FROM klines AS k
         INNER JOIN coins_pairs AS cp ON cp.id = k.coin_pair_id
+        WHERE k.open_time >= NOW() - interval '24 HOUR'
         ORDER BY k.coin_pair_id, k.quote_asset_volume DESC
     ) AS t
 )
