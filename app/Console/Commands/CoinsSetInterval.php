@@ -1,13 +1,13 @@
 <?php
 /**
- * php artisan coins-set-rank:run
+ * php artisan coins-set-interval:run
  */
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
-class CoinsSetRank extends Command
+class CoinsSetInterval extends Command
 {
 
     /**
@@ -15,14 +15,14 @@ class CoinsSetRank extends Command
      *
      * @var string
      */
-    protected $signature = 'coins-set-rank:run';
+    protected $signature = 'coins-set-interval:run';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Recalculate rank coin';
+    protected $description = 'Re interval coin';
 
     /**
      * Create a new command instance.
@@ -44,7 +44,7 @@ class CoinsSetRank extends Command
         $timeExecute = -microtime(true);
 
         try {
-            $sqlReCalculate = <<<SQL
+            $sqlReInterval = <<<SQL
 WITH coin_asset_volume AS (
     SELECT t.*,
     row_number() OVER (ORDER BY t.quote_asset_volume DESC) AS rank
@@ -61,22 +61,33 @@ WITH coin_asset_volume AS (
     ) AS t
 )
 
-UPDATE coins SET rank = volume.rank
+UPDATE coins
+    SET interval = CASE
+                 WHEN volume.rank <= 10 THEN '1m'
+                 WHEN volume.rank > 10 AND volume.rank <= 20 THEN '3m'
+                 WHEN volume.rank > 20 AND volume.rank <= 30 THEN '5m'
+                 WHEN volume.rank > 30 AND volume.rank <= 40 THEN '15m'
+                 WHEN volume.rank > 40 AND volume.rank <= 50 THEN '30m'
+                 WHEN volume.rank > 50 AND volume.rank <= 80 THEN '1h'
+                 WHEN volume.rank > 80 AND volume.rank <= 100 THEN '2h'
+                ELSE '12h'
+              END
 FROM coin_asset_volume AS volume
 WHERE volume.coin_id = coins.id;
 SQL;
-            $countUpdated = DB::affectingStatement($sqlReCalculate);
+
+            $countUpdated = DB::affectingStatement($sqlReInterval);
 
             $this->line(sprintf('Updated coins: %s', $countUpdated));
         } catch (\Exception $e) {
-            \Log::error('Error recalculate coins rank - ' . $e->getMessage());
-            $this->error('Error recalculate coins rank: ' . $e->getMessage());
+            \Log::error('Error reinterval coins - ' . $e->getMessage());
+            $this->error('Error reinterval coins: ' . $e->getMessage());
             return;
         }
 
         $timeExecute += microtime(true);
         $timeWorking = sprintf('%f', $timeExecute);
 
-        $this->line('Recalculate rank time: ' . $timeWorking);
+        $this->line('ReInterval time: ' . $timeWorking);
     }
 }
